@@ -130,7 +130,10 @@ input:disabled { opacity: 0.4; }
 .segmented input:checked + span { background: var(--primary); border-color: var(--primary); font-weight: 700; }
 .segmented input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-.segmented.two { grid-template-columns: repeat(2, 1fr); width: 50%; justify-self: start; }
+/* 양력/음력: '생년월일' 옆에 작게(기본 버튼의 70%) */
+.label-row { display: flex; align-items: center; gap: 16px; padding: 0; margin-bottom: 8px; }
+.segmented.two { grid-template-columns: repeat(2, 70px); gap: 6px; font-weight: 400; }
+.segmented.two span { padding: 7px 4px; font-size: 10px; border-radius: 7px; }
 .date-row { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 8px; }
 .birth-info { margin: -6px 0 14px; font-size: 13px; color: var(--muted); }
 
@@ -363,11 +366,13 @@ select { padding: 14px 10px; }
 
       <form id="saju-form" class="card form" novalidate>
         <fieldset class="field">
-          <legend class="label">생년월일</legend>
-          <div class="segmented two">
-            <label><input type="radio" name="calendar" value="solar" checked /><span>양력</span></label>
-            <label><input type="radio" name="calendar" value="lunar" /><span>음력</span></label>
-          </div>
+          <legend class="label label-row">
+            <span>생년월일</span>
+            <span class="segmented two">
+              <label><input type="radio" name="calendar" value="solar" checked /><span>양력</span></label>
+              <label><input type="radio" name="calendar" value="lunar" /><span>음력</span></label>
+            </span>
+          </legend>
           <div class="date-row">
             <select id="birth-year" aria-label="태어난 해" required></select>
             <select id="birth-month" aria-label="태어난 달" required></select>
