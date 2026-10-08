@@ -276,7 +276,7 @@ input:disabled { opacity: 0.4; }
   font-size: 14px;
 }
 
-.result-actions { text-align: center; margin-top: 24px; }
+.result-actions { text-align: left; margin-bottom: 12px; }
 
 .footer {
   position: relative;
@@ -420,6 +420,9 @@ select { padding: 14px 10px; }
 
     <!-- 3. 결과 화면 -->
     <section id="screen-result" class="screen" aria-labelledby="result-title">
+      <div class="result-actions">
+        <button type="button" class="btn ghost" id="btn-restart">← 다른 생년월일로 보기</button>
+      </div>
       <div class="result-grid">
         <article class="card identity" id="identity">
           <p class="eyebrow">당신의 사주는</p>
@@ -447,9 +450,6 @@ select { padding: 14px 10px; }
         </aside>
       </div>
 
-      <div class="result-actions">
-        <button type="button" class="btn ghost" id="btn-restart">← 다른 생년월일로 보기</button>
-      </div>
     </section>
   </main>
 
