@@ -289,6 +289,50 @@ input:disabled { opacity: 0.4; }
 }
 .footer p { margin: 4px 0; }
 
+/* ── 시기 선택 · 인생 흐름 ─────────────────── */
+.period-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 4px; margin-bottom: 14px; border-radius: 14px; background: rgba(0, 0, 0, 0.25); }
+.period-btn { font: inherit; color: var(--muted); background: none; border: 0; border-radius: 10px; padding: 8px 4px; cursor: pointer; display: grid; line-height: 1.3; }
+.period-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: var(--fg); }
+.period-label { font-weight: 700; font-size: 15px; }
+.period-sub { font-size: 12px; opacity: 0.85; }
+.category-grid[hidden] { display: none; }
+.reading .yearly { padding: 10px 12px; border-left: 3px solid var(--gold); background: rgba(245, 201, 106, 0.08); border-radius: 0 10px 10px 0; }
+.gender-pick { display: flex; gap: 8px; }
+.life-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.hl { display: grid; gap: 2px; padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.22); border: 1px solid var(--border); }
+.hl.great, .hl.good { border-color: rgba(245, 201, 106, 0.6); }
+.hl.care { border-color: rgba(255, 138, 138, 0.6); }
+.hl-title { font-size: 13px; color: var(--muted); }
+.hl strong { font-size: 20px; }
+.hl-years { font-size: 12px; color: var(--muted); }
+.life-sub { margin: 18px 0 8px; font-size: 14px; color: var(--muted); }
+.daeun-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.daeun { padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.18); border-left: 4px solid var(--border); }
+.daeun.great { border-left-color: var(--gold); }
+.daeun.good { border-left-color: #7ee2a8; }
+.daeun.care { border-left-color: var(--danger); }
+.daeun.current { outline: 1px solid var(--gold); }
+.daeun p { margin: 6px 0 0; font-size: 14px; }
+.daeun-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.daeun-age { font-weight: 700; }
+.daeun-years, .daeun-pillar { font-size: 13px; color: var(--muted); }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
+.badge.great { background: rgba(245, 201, 106, 0.25); color: var(--gold); }
+.badge.good { background: rgba(126, 226, 168, 0.18); color: #a6f0c6; }
+.badge.care { background: rgba(255, 138, 138, 0.18); color: var(--danger); }
+.now { font-size: 12px; font-weight: 700; color: var(--bg); background: var(--gold); padding: 2px 8px; border-radius: 999px; }
+.year-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.year-chip { display: grid; justify-items: center; padding: 8px 2px; border-radius: 10px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); font-size: 12px; }
+.year-chip.great { border-color: var(--gold); background: rgba(245, 201, 106, 0.15); }
+.year-chip.care { border-color: rgba(255, 138, 138, 0.6); }
+.yc-year { font-weight: 700; font-size: 13px; }
+.yc-icon { font-size: 18px; }
+.yc-label { color: var(--muted); }
+.life-note { font-size: 12px; color: var(--muted); }
+@media (max-width: 420px) {
+  .life-highlights { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 860px) {
   .result-grid { grid-template-columns: 1fr; }
   .fortune { position: static; }
@@ -314,7 +358,7 @@ select { padding: 14px 10px; }
       <div class="hero">
         <div class="hero-icon" aria-hidden="true">🔮</div>
         <h1 id="title-input">AI 사주 보기</h1>
-        <p class="lead">생년월일과 태어난 시각을 입력하면<br />간단한 사주를 확인할 수 있습니다.</p>
+        <p class="lead">생년월일과 태어난 시각을 알려 주시면<br />타고난 사주팔자를 분석해 드릴게요.</p>
       </div>
 
       <form id="saju-form" class="card form" novalidate>
@@ -331,7 +375,7 @@ select { padding: 14px 10px; }
           </div>
           <label class="check" id="leap-wrap" hidden>
             <input type="checkbox" id="leap-month" />
-            <span>윤달</span>
+            <span>윤달이에요</span>
           </label>
         </fieldset>
 
@@ -396,7 +440,8 @@ select { padding: 14px 10px; }
 
         <aside class="card fortune" aria-labelledby="fortune-title">
           <h3 id="fortune-title" class="fortune-title">세부 운세 보기</h3>
-          <p class="fortune-desc">궁금한 부문을 골라 보세요.</p>
+          <p class="fortune-desc">보고 싶은 시기와 부문을 골라 보세요.</p>
+          <div class="period-tabs" id="periods" role="tablist" aria-label="운세 시기"></div>
           <div class="category-grid" id="categories" role="tablist" aria-label="운세 부문"></div>
           <div class="reading" id="reading" role="tabpanel" aria-live="polite" hidden></div>
         </aside>
@@ -410,7 +455,7 @@ select { padding: 14px 10px; }
 
   <footer class="footer">
     <p>사주 해석은 명리학의 일반 규칙을 바탕으로 자동 생성된 참고용 내용이며, 재미로 즐겨 주세요.</p>
-    <p>제작_2026 중앙여고 소프트웨어공학 동아리 Scrumble</p>
+    <p>절기는 천문 계산으로 구하며 입력 시각은 한국 표준시 기준이며, 실제 태양 시각에 맞추기 위해 한국 경도 보정(30분)을 적용합니다(자시 23:30~01:29). 서머타임이 시행되던 기간(1987~1988년 여름 등)에 태어났다면 시계 시각에서 1시간을 빼서 입력하세요.</p>
   </footer>
 
   <script>
@@ -563,6 +608,8 @@ select { padding: 14px 10px; }
 
     return {
       input: input,
+      jd: jd,
+      solarDate: { y: y, m: m, d: d },
       sajuYear: sajuYear,
       animal: ANIMALS[yearBranch],
       sunLongitude: lon,
@@ -589,6 +636,55 @@ select { padding: 14px 10px; }
       branchGroup: tenGodGroup(dayStem, BRANCH_MAIN_STEM[branch])
     };
   }
+
+  // ── 대운(10년 단위 운의 흐름) ─────────────────────────
+  function termIndex(jd) { return Math.floor(mod(sunLongitude(jd) - 315, 360) / 30); }
+
+  // 출생 시점에서 다음(또는 이전) 절입까지 걸린 날 수
+  function daysToTerm(jd, forward) {
+    var dir = forward ? 1 : -1;
+    var start = termIndex(jd);
+    var a = jd, b = jd;
+    for (var i = 0; i < 80; i++) {
+      b = jd + dir * (i + 1) * 0.5;
+      if (termIndex(b) !== start) break;
+      a = b;
+    }
+    for (var k = 0; k < 30; k++) {        // 이분법으로 절입 시각을 좁힙니다
+      var mid = (a + b) / 2;
+      if (termIndex(mid) === start) a = mid; else b = mid;
+    }
+    return Math.abs(b - jd);
+  }
+
+  function cycleIndex(stem, branch) { return mod(6 * stem - 5 * branch, 60); }
+
+  /**
+   * 대운: 양년생 남자·음년생 여자는 순행, 그 반대는 역행.
+   * 시작 나이 = 절입까지의 날 수 ÷ 3 (3일 = 1년)
+   */
+  function daeun(r, gender, count) {
+    count = count || 9;
+    var yangYear = r.pillars.year.stem % 2 === 0;
+    var forward = yangYear === (gender === 'male');
+    var startAge = Math.max(1, Math.round(daysToTerm(r.jd, forward) / 3));
+    var base = cycleIndex(r.pillars.month.stem, r.pillars.month.branch);
+    var list = [];
+    for (var i = 1; i <= count; i++) {
+      var idx = mod(base + (forward ? i : -i), 60);
+      var age = startAge + (i - 1) * 10;
+      list.push({
+        pillar: pillar(idx % 10, idx % 12),
+        startAge: age,
+        endAge: age + 9,
+        startYear: r.solarDate.y + age,
+        endYear: r.solarDate.y + age + 9
+      });
+    }
+    return { forward: forward, startAge: startAge, periods: list };
+  }
+
+  function yearPillar(year) { return pillar(mod(year - 4, 10), mod(year - 4, 12)); }
 
   // ── 음력 → 양력 변환 ──────────────────────────────────
   // 브라우저 내장 한국 음력(Intl 'dangi' 달력)을 이용해 해당 날짜를 찾습니다.
@@ -638,6 +734,9 @@ select { padding: 14px 10px; }
   }
 
   global.Saju = {
+    daeun: daeun,
+    yearPillar: yearPillar,
+    BRANCH_MAIN_STEM: BRANCH_MAIN_STEM,
     lunarToSolar: lunarToSolar,
     solarToLunar: solarToLunar,
     STEMS: STEMS,
@@ -730,9 +829,20 @@ select { padding: 14px 10px; }
     { id: 'money', label: '금전운', icon: '💰' },
     { id: 'career', label: '직장운', icon: '💼' },
     { id: 'study', label: '학업운', icon: '📚' },
-    { id: 'health', label: '건강운', icon: '🍀' },
-    { id: 'year', label: '2026 올해 운세', icon: '🐎' }
+    { id: 'health', label: '건강운', icon: '🍀' }
   ];
+  var OVERALL = { id: 'overall', label: '총운', icon: '🌟' };
+
+  var PERIODS = [
+    { id: 'thisYear', label: '올해', offset: 0 },
+    { id: 'nextYear', label: '내년', offset: 1 },
+    { id: 'life', label: '인생 전반' }
+  ];
+
+  var STEM_COLOR = ['푸른', '푸른', '붉은', '붉은', '황금', '황금', '하얀', '하얀', '검은', '검은'];
+  var ANIMALS = ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'];
+  var BRANCH_MAIN_STEM = [9, 5, 0, 1, 4, 2, 3, 5, 6, 7, 4, 8];
+  var THEMES = ['독립·경쟁', '재능·표현', '재물·결실', '직업·명예', '배움·귀인'];
 
   function level(n) { return n === 0 ? 0 : (n <= 2 ? 1 : 2); }
   function clampScore(s) { return Math.max(35, Math.min(98, Math.round(s))); }
@@ -860,10 +970,41 @@ select { padding: 14px 10px; }
     return { score: score, paragraphs: p };
   }
 
-  function readYear(r, targetYear) {
-    var inf = global.Saju.yearInfluence(r.dayMaster, targetYear);
+  function godOf(r, stem) { return ((global.Saju.STEM_ELEMENT[stem] - r.dayMasterElement) % 5 + 5) % 5; }
+
+  // 어떤 오행(십성 그룹)이 이 사주에 도움이 되는지: +1 도움, -1 부담, 0 보통
+  function groupEffect(r, group) {
+    if (r.strength === 'strong') return [-1, 1, 1, 0.5, -1][group];
+    if (r.strength === 'weak') return [1, -0.5, -1, -1, 1][group];
+    var el = (r.dayMasterElement + group) % 5;
+    if (el === r.weakest || el === (r.weakest + 4) % 5) return 1;
+    if (el === r.dominant) return -1;
+    return 0;
+  }
+
+  // 간지 하나(대운·세운)가 이 사주에 주는 영향 점수 (-2.5 ~ +2.5)
+  function pillarEffect(r, p) {
+    var sg = godOf(r, p.stem);
+    var bg = godOf(r, BRANCH_MAIN_STEM[p.branch]);
+    return { score: groupEffect(r, sg) + 1.5 * groupEffect(r, bg), stemGroup: sg, branchGroup: bg };
+  }
+
+  function rate(score) {
+    if (score >= 1.5) return { key: 'great', label: '큰 행운', icon: '🌟' };
+    if (score >= 0.5) return { key: 'good', label: '순조', icon: '🌤️' };
+    if (score > -1) return { key: 'calm', label: '평온', icon: '☁️' };
+    return { key: 'care', label: '주의', icon: '⚠️' };
+  }
+
+  function yearName(year) {
+    var yp = global.Saju.yearPillar(year);
+    return year + '년 ' + yp.text + '(' + yp.hanja + ')년, ' + STEM_COLOR[yp.stem] + ' ' + ANIMALS[yp.branch] + '의 해';
+  }
+
+  function readOverall(r, targetYear) {
+    var yp = global.Saju.yearPillar(targetYear);
+    var eff = pillarEffect(r, yp);
     var p = [];
-    var head = targetYear + '년은 ' + inf.pillar.text + '(' + inf.pillar.hanja + ')년, 붉은 말의 해입니다. ';
     var texts = [
       '나와 같은 기운이 들어오는 해라 자신감과 추진력이 커집니다. 새로운 도전을 시작하기 좋지만, 경쟁자도 함께 늘어나니 협력할 사람을 잘 고르세요.',
       '나의 재능과 표현력이 꽃피는 해입니다. 하고 싶은 말을 하고 만들고 싶은 것을 만들면 주목받습니다. 말실수만 조심하면 좋은 결과가 따릅니다.',
@@ -871,17 +1012,48 @@ select { padding: 14px 10px; }
       '책임과 명예의 기운이 들어오는 해입니다. 승진·합격·새 직책처럼 인정받을 일이 생기지만 부담도 커지니 건강 관리를 함께 하세요.',
       '도움과 배움의 기운이 들어오는 해입니다. 좋은 스승이나 귀인을 만나고 공부·자격증에 유리합니다. 계약과 문서 운도 좋습니다.'
     ];
-    p.push(head + texts[inf.group]);
-    var fire = 1; // 병오년은 화 기운이 매우 강함
-    var me = r.dayMasterElement;
-    if (me === 4) p.push('물(수)의 기운인 당신에게 강한 불의 해는 재물의 기회이자 긴장의 해입니다. 큰 결정은 상반기보다 가을 이후에 내리면 안정적입니다.');
-    else if (me === 3) p.push('쇠(금)의 기운인 당신에게 불의 해는 단련의 시간입니다. 압박이 있어도 그만큼 단단해지고 이름을 알리게 됩니다.');
-    else if (me === fire) p.push('불의 기운이 겹치는 해라 에너지가 넘칩니다. 열정이 지나쳐 성급해지지 않도록 속도를 조절하세요.');
-    else if (me === 0) p.push('나무(목)의 기운인 당신이 불을 피워 내는 해라 재능이 세상에 드러납니다. 체력 소모가 크니 휴식도 계획에 넣으세요.');
-    else p.push('흙(토)의 기운인 당신에게 불은 든든한 지원군입니다. 주변의 도움이 많고 일이 순조롭게 풀리는 해입니다.');
-    var base = [72, 78, 80, 70, 82][inf.group];
-    var score = base + (r.counts[1] === 0 ? 6 : 0) - (r.counts[1] >= 4 ? 8 : 0);
-    return { score: score, paragraphs: p };
+    p.push(yearName(targetYear) + '입니다. ' + texts[eff.stemGroup]);
+    if (eff.branchGroup !== eff.stemGroup) {
+      p.push('생활 환경과 하반기 흐름에는 ' + THEMES[eff.branchGroup] + '의 기운이 함께해, 그 방면의 일이 자주 생깁니다.');
+    }
+    var rt = rate(eff.score);
+    p.push({
+      great: '타고난 사주에 꼭 필요한 기운이 들어오는 해라, 몇 년에 한 번 오는 큰 행운의 시기입니다. 미뤄 둔 계획을 과감하게 실행하세요.',
+      good: '사주와 잘 어울리는 기운이 들어와 대체로 일이 순조롭게 풀립니다. 꾸준히 하던 일에서 성과가 납니다.',
+      calm: '크게 들뜨지도 가라앉지도 않는 평온한 해입니다. 기반을 다지고 실력을 쌓기에 알맞습니다.',
+      care: '사주에 부담이 되는 기운이 강해지는 해라 무리한 확장이나 큰 결정은 신중해야 합니다. 건강과 인간관계를 먼저 챙기세요.'
+    }[rt.key]);
+    return { score: 70 + eff.score * 9, paragraphs: p };
+  }
+
+  // 부문별 운세에 해당 연도의 흐름을 더합니다.
+  var CATEGORY_GROUPS = {
+    money: { good: [2, 1], bad: [0], goodText: '재물이 들어오는 길이 넓어지는 해입니다. 수입을 늘릴 기회를 놓치지 마세요.', badText: '경쟁과 지출이 늘기 쉬운 해라 큰돈이 오가는 일은 한 번 더 따져 보세요.' },
+    career: { good: [3, 4], bad: [1], goodText: '직장과 명예의 기운이 들어와 승진·이직·합격 소식을 기대할 만합니다.', badText: '윗사람과 의견이 부딪히기 쉬운 해라 말과 태도를 한 번 더 다듬으세요.' },
+    study: { good: [4, 3], bad: [2], goodText: '배움의 기운이 강해 시험과 자격증 준비에 특히 유리한 해입니다.', badText: '공부보다 현실적인 일에 마음이 쏠리기 쉬우니 목표를 작게 쪼개 꾸준히 이어 가세요.' },
+    health: { good: [4, 0], bad: [3], goodText: '기운이 충전되는 해라 새 운동이나 생활 습관을 들이기 좋습니다.', badText: '책임과 압박이 커져 피로가 쌓이기 쉬우니 휴식 일정을 먼저 잡으세요.' }
+  };
+
+  function yearlyAddon(r, categoryId, gender, year) {
+    var yp = global.Saju.yearPillar(year);
+    var groups = [godOf(r, yp.stem), godOf(r, BRANCH_MAIN_STEM[yp.branch])];
+    var conf = CATEGORY_GROUPS[categoryId];
+    if (categoryId === 'love') {
+      var partner = gender === 'male' ? [2] : (gender === 'female' ? [3] : [2, 3]);
+      conf = { good: partner.concat([1]), bad: [0],
+        goodText: '인연의 기운이 들어오는 해라 새로운 만남이나 관계의 진전을 기대할 수 있습니다.',
+        badText: '연애에서도 자기 주장이 강해지기 쉬운 해라 상대의 속도에 맞춰 주는 배려가 필요합니다.' };
+    }
+    var hit = groups.some(function (g) { return conf.good.indexOf(g) >= 0; });
+    var miss = !hit && groups.some(function (g) { return conf.bad.indexOf(g) >= 0; });
+    var heavy = pillarEffect(r, yp).score <= -1;
+    var text = hit ? conf.goodText : (miss ? conf.badText : '이 부문은 큰 변화 없이 무난하게 흘러가니, 타고난 장점을 꾸준히 살리면 됩니다.');
+    var delta = hit ? 10 : (miss ? -8 : 0);
+    if (hit && heavy) {
+      text += ' 다만 올해 기운이 사주에 다소 무거우니 욕심을 줄이고 실속을 챙길 때 결과가 좋습니다.';
+      delta = 3;
+    }
+    return { text: year + '년(' + yp.text + '년) 흐름: ' + text, delta: delta };
   }
 
   function read(r, categoryId, options) {
@@ -893,17 +1065,63 @@ select { padding: 14px 10px; }
       case 'career': res = readCareer(r); break;
       case 'study': res = readStudy(r); break;
       case 'health': res = readHealth(r); break;
-      case 'year': res = readYear(r, options.year || 2026); break;
+      case 'overall': res = readOverall(r, options.year); break;
       default: throw new Error('unknown category ' + categoryId);
     }
-    var score = clampScore(res.score);
-    var cat = CATEGORIES.filter(function (c) { return c.id === categoryId; })[0];
+    var score = res.score;
+    var yearly = null;
+    if (categoryId !== 'overall' && options.year) {
+      var add = yearlyAddon(r, categoryId, options.gender, options.year);
+      yearly = add.text;
+      score += add.delta;
+    }
+    score = clampScore(score);
+    var cat = categoryId === 'overall' ? OVERALL : CATEGORIES.filter(function (c) { return c.id === categoryId; })[0];
     return {
       category: cat,
       score: score,
       stars: Math.max(1, Math.min(5, Math.round(score / 20))),
+      yearly: yearly,
       paragraphs: res.paragraphs,
       tips: luckyTips(r)
+    };
+  }
+
+  // 인생 전반: 대운 흐름 + 앞으로 10년 세운
+  function lifeFlow(r, gender, currentYear) {
+    var d = global.Saju.daeun(r, gender, 9);
+    var birthYear = r.solarDate.y;
+    var periods = d.periods.map(function (pd) {
+      var eff = pillarEffect(r, pd.pillar);
+      var rt = rate(eff.score);
+      var theme = THEMES[eff.branchGroup];
+      var desc = {
+        great: theme + '의 기운이 사주를 크게 살려 주는 10년입니다. 인생의 전성기로, 큰 도전과 결실이 기대됩니다.',
+        good: theme + '의 기운이 순풍처럼 밀어 주는 10년입니다. 노력한 만큼 성과가 따릅니다.',
+        calm: theme + '의 기운이 중심이 되는 무난한 10년입니다. 실력과 기반을 착실히 쌓기 좋습니다.',
+        care: theme + '의 기운이 부담으로 작용하기 쉬운 10년입니다. 무리한 확장보다 건강과 관계를 지키는 데 집중하세요.'
+      }[rt.key];
+      return {
+        pillar: pd.pillar, startAge: pd.startAge, endAge: pd.endAge,
+        startYear: pd.startYear, endYear: pd.endYear,
+        score: eff.score, rating: rt, desc: desc,
+        current: currentYear >= pd.startYear && currentYear <= pd.endYear
+      };
+    });
+    // 지금 이후, 80세 이전의 대운 중에서 고릅니다.
+    var future = periods.filter(function (p) { return p.endYear >= currentYear && p.startAge <= 75; });
+    var pool = future.length ? future : periods;
+    var best = pool.reduce(function (a, b) { return b.score > a.score ? b : a; });
+    var worst = pool.reduce(function (a, b) { return b.score < a.score ? b : a; });
+    var years = [];
+    for (var y = currentYear; y < currentYear + 10; y++) {
+      var yp = global.Saju.yearPillar(y);
+      var e = pillarEffect(r, yp);
+      years.push({ year: y, age: y - birthYear, pillar: yp, rating: rate(e.score), score: e.score });
+    }
+    return {
+      forward: d.forward, startAge: d.startAge, periods: periods,
+      best: best, worst: worst, years: years
     };
   }
 
@@ -912,6 +1130,10 @@ select { padding: 14px 10px; }
     ELEMENT_INFO: ELEMENT_INFO,
     GOD_NAMES: GOD_NAMES,
     CATEGORIES: CATEGORIES,
+    OVERALL: OVERALL,
+    PERIODS: PERIODS,
+    lifeFlow: lifeFlow,
+    yearName: yearName,
     summary: summary,
     read: read
   };
@@ -926,7 +1148,8 @@ select { padding: 14px 10px; }
   var R = window.SajuReading;
   var $ = function (id) { return document.getElementById(id); };
 
-  var state = { result: null, gender: '' };
+  var state = { result: null, gender: '', period: 'thisYear', category: null, lifeGender: '' };
+  var THIS_YEAR = new Date().getFullYear();
 
   function show(screenId) {
     document.querySelectorAll('.screen').forEach(function (s) {
@@ -1070,7 +1293,45 @@ select { padding: 14px 10px; }
 
     renderPillars(r);
     renderElements(r, s);
+    state.period = 'thisYear';
+    state.category = null;
+    state.lifeGender = state.gender;
+    renderPeriods();
     renderCategories();
+    selectPeriod('thisYear');
+  }
+
+  function periodYear() {
+    var pd = R.PERIODS.filter(function (x) { return x.id === state.period; })[0];
+    return THIS_YEAR + (pd.offset || 0);
+  }
+
+  function renderPeriods() {
+    var box = $('periods');
+    box.innerHTML = '';
+    R.PERIODS.forEach(function (pd) {
+      var b = el('button', 'period-btn');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.dataset.id = pd.id;
+      b.appendChild(el('span', 'period-label', pd.label));
+      b.appendChild(el('span', 'period-sub', pd.id === 'life' ? '대운 흐름' : (THIS_YEAR + pd.offset) + '년'));
+      b.addEventListener('click', function () { selectPeriod(pd.id); });
+      box.appendChild(b);
+    });
+  }
+
+  function selectPeriod(id) {
+    state.period = id;
+    document.querySelectorAll('.period-btn').forEach(function (b) {
+      var on = b.dataset.id === id;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    var life = id === 'life';
+    $('categories').hidden = life;
+    if (life) return renderLife();
+    if (state.category) return selectCategory(state.category);
     $('reading').hidden = true;
     $('reading').innerHTML = '';
   }
@@ -1130,7 +1391,7 @@ select { padding: 14px 10px; }
   function renderCategories() {
     var box = $('categories');
     box.innerHTML = '';
-    R.CATEGORIES.forEach(function (cat) {
+    [R.OVERALL].concat(R.CATEGORIES).forEach(function (cat) {
       var b = el('button', 'cat-btn');
       b.type = 'button';
       b.setAttribute('role', 'tab');
@@ -1144,19 +1405,21 @@ select { padding: 14px 10px; }
   }
 
   function selectCategory(id) {
+    state.category = id;
     document.querySelectorAll('.cat-btn').forEach(function (b) {
       var on = b.dataset.id === id;
       b.classList.toggle('active', on);
       b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
 
-    var res = R.read(state.result, id, { gender: state.gender, year: 2026 });
+    var year = periodYear();
+    var res = R.read(state.result, id, { gender: state.gender, year: year });
     var box = $('reading');
     box.innerHTML = '';
     box.hidden = false;
 
     var head = el('div', 'reading-head');
-    head.appendChild(el('h4', null, res.category.icon + ' ' + res.category.label));
+    head.appendChild(el('h4', null, res.category.icon + ' ' + year + '년 ' + res.category.label));
     var stars = el('div', 'stars');
     stars.setAttribute('aria-label', '5점 만점에 ' + res.stars + '점');
     stars.textContent = '★★★★★'.slice(0, res.stars) + '☆☆☆☆☆'.slice(0, 5 - res.stars);
@@ -1172,6 +1435,7 @@ select { padding: 14px 10px; }
     box.appendChild(meter);
     requestAnimationFrame(function () { fill.style.width = res.score + '%'; });
 
+    if (res.yearly) box.appendChild(el('p', 'yearly', res.yearly));
     res.paragraphs.forEach(function (t) { box.appendChild(el('p', null, t)); });
 
     var tips = el('ul', 'tips');
@@ -1182,6 +1446,78 @@ select { padding: 14px 10px; }
     void box.offsetWidth;
     box.classList.add('pop');
     if (window.innerWidth < 860) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── 인생 전반(대운) ─────────────────────────────────
+  function renderLife() {
+    var box = $('reading');
+    box.innerHTML = '';
+    box.hidden = false;
+    box.appendChild(el('div', 'reading-head')).appendChild(el('h4', null, '🧭 인생 전반의 흐름'));
+
+    if (!state.lifeGender) {
+      box.appendChild(el('p', null, '대운은 성별에 따라 흐르는 방향이 달라요. 성별을 골라 주세요.'));
+      var row = el('div', 'gender-pick');
+      [['female', '여성'], ['male', '남성']].forEach(function (g) {
+        var b = el('button', 'btn', g[1]);
+        b.type = 'button';
+        b.addEventListener('click', function () { state.lifeGender = g[0]; renderLife(); });
+        row.appendChild(b);
+      });
+      box.appendChild(row);
+      return;
+    }
+
+    var L = R.lifeFlow(state.result, state.lifeGender, THIS_YEAR);
+    var hl = el('div', 'life-highlights');
+    hl.appendChild(highlight('🌟 가장 큰 행운 시기', L.best));
+    hl.appendChild(highlight('⚠️ 조심할 시기', L.worst));
+    box.appendChild(hl);
+
+    box.appendChild(el('h5', 'life-sub', '10년 단위 대운'));
+    var list = el('ol', 'daeun-list');
+    L.periods.forEach(function (pd) {
+      var li = el('li', 'daeun ' + pd.rating.key + (pd.current ? ' current' : ''));
+      var top = el('div', 'daeun-top');
+      top.appendChild(el('span', 'daeun-age', pd.startAge + '~' + pd.endAge + '세'));
+      top.appendChild(el('span', 'daeun-years', pd.startYear + '~' + pd.endYear));
+      top.appendChild(el('span', 'daeun-pillar', pd.pillar.hanja + ' ' + pd.pillar.text));
+      top.appendChild(el('span', 'badge ' + pd.rating.key, pd.rating.icon + ' ' + pd.rating.label));
+      if (pd.current) top.appendChild(el('span', 'now', '지금'));
+      li.appendChild(top);
+      li.appendChild(el('p', null, pd.desc));
+      list.appendChild(li);
+    });
+    box.appendChild(list);
+
+    box.appendChild(el('h5', 'life-sub', '앞으로 10년, 해마다의 흐름'));
+    var grid = el('div', 'year-grid');
+    L.years.forEach(function (y) {
+      var c = el('div', 'year-chip ' + y.rating.key);
+      c.title = y.pillar.text + '년 · ' + y.rating.label;
+      c.appendChild(el('span', 'yc-year', y.year));
+      c.appendChild(el('span', 'yc-icon', y.rating.icon));
+      c.appendChild(el('span', 'yc-label', y.rating.label));
+      grid.appendChild(c);
+    });
+    box.appendChild(grid);
+
+    box.appendChild(el('p', 'life-note',
+      '대운은 ' + L.startAge + '세부터 10년마다 바뀌며 ' + (L.forward ? '순행' : '역행') + '합니다. ' +
+      '나이는 출생 연도로 계산한 만 나이 기준의 근사치입니다.' +
+      (state.gender ? '' : ' (' + (state.lifeGender === 'male' ? '남성' : '여성') + ' 기준으로 계산했어요.)')));
+
+    box.classList.remove('pop');
+    void box.offsetWidth;
+    box.classList.add('pop');
+  }
+
+  function highlight(title, pd) {
+    var d = el('div', 'hl ' + pd.rating.key);
+    d.appendChild(el('span', 'hl-title', title));
+    d.appendChild(el('strong', null, pd.startAge + '~' + pd.endAge + '세'));
+    d.appendChild(el('span', 'hl-years', pd.startYear + '~' + pd.endYear + '년 · ' + pd.pillar.text + ' 대운'));
+    return d;
   }
 
   $('btn-restart').addEventListener('click', function () { show('screen-input'); });
