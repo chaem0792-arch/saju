@@ -289,12 +289,7 @@ input:disabled { opacity: 0.4; }
 }
 .footer p { margin: 4px 0; }
 
-/* ── 시기 선택 · 인생 흐름 ─────────────────── */
-.period-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 4px; margin-bottom: 14px; border-radius: 14px; background: rgba(0, 0, 0, 0.25); }
-.period-btn { font: inherit; color: var(--muted); background: none; border: 0; border-radius: 10px; padding: 8px 4px; cursor: pointer; display: grid; line-height: 1.3; }
-.period-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-2)); color: var(--fg); }
-.period-label { font-weight: 700; font-size: 15px; }
-.period-sub { font-size: 12px; opacity: 0.85; }
+/* ── 총운 · 인생 흐름 ───────────────────── */
 .category-grid[hidden] { display: none; }
 .reading .yearly { padding: 10px 12px; border-left: 3px solid var(--gold); background: rgba(245, 201, 106, 0.08); border-radius: 0 10px 10px 0; }
 .gender-pick { display: flex; gap: 8px; }
@@ -440,8 +435,7 @@ select { padding: 14px 10px; }
 
         <aside class="card fortune" aria-labelledby="fortune-title">
           <h3 id="fortune-title" class="fortune-title">세부 운세 보기</h3>
-          <p class="fortune-desc">보고 싶은 시기와 부문을 골라 보세요.</p>
-          <div class="period-tabs" id="periods" role="tablist" aria-label="운세 시기"></div>
+          <p class="fortune-desc">궁금한 부문을 골라 보세요.</p>
           <div class="category-grid" id="categories" role="tablist" aria-label="운세 부문"></div>
           <div class="reading" id="reading" role="tabpanel" aria-live="polite" hidden></div>
         </aside>
@@ -833,12 +827,6 @@ select { padding: 14px 10px; }
   ];
   var OVERALL = { id: 'overall', label: '총운', icon: '🌟' };
 
-  var PERIODS = [
-    { id: 'thisYear', label: '올해', offset: 0 },
-    { id: 'nextYear', label: '내년', offset: 1 },
-    { id: 'life', label: '인생 전반' }
-  ];
-
   var STEM_COLOR = ['푸른', '푸른', '붉은', '붉은', '황금', '황금', '하얀', '하얀', '검은', '검은'];
   var ANIMALS = ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'];
   var BRANCH_MAIN_STEM = [9, 5, 0, 1, 4, 2, 3, 5, 6, 7, 4, 8];
@@ -1131,7 +1119,6 @@ select { padding: 14px 10px; }
     GOD_NAMES: GOD_NAMES,
     CATEGORIES: CATEGORIES,
     OVERALL: OVERALL,
-    PERIODS: PERIODS,
     lifeFlow: lifeFlow,
     yearName: yearName,
     summary: summary,
@@ -1148,7 +1135,7 @@ select { padding: 14px 10px; }
   var R = window.SajuReading;
   var $ = function (id) { return document.getElementById(id); };
 
-  var state = { result: null, gender: '', period: 'thisYear', category: null, lifeGender: '' };
+  var state = { result: null, gender: '', category: null, lifeGender: '' };
   var THIS_YEAR = new Date().getFullYear();
 
   function show(screenId) {
@@ -1293,47 +1280,19 @@ select { padding: 14px 10px; }
 
     renderPillars(r);
     renderElements(r, s);
-    state.period = 'thisYear';
     state.category = null;
     state.lifeGender = state.gender;
-    renderPeriods();
     renderCategories();
-    selectPeriod('thisYear');
-  }
-
-  function periodYear() {
-    var pd = R.PERIODS.filter(function (x) { return x.id === state.period; })[0];
-    return THIS_YEAR + (pd.offset || 0);
-  }
-
-  function renderPeriods() {
-    var box = $('periods');
-    box.innerHTML = '';
-    R.PERIODS.forEach(function (pd) {
-      var b = el('button', 'period-btn');
-      b.type = 'button';
-      b.setAttribute('role', 'tab');
-      b.dataset.id = pd.id;
-      b.appendChild(el('span', 'period-label', pd.label));
-      b.appendChild(el('span', 'period-sub', pd.id === 'life' ? '대운 흐름' : (THIS_YEAR + pd.offset) + '년'));
-      b.addEventListener('click', function () { selectPeriod(pd.id); });
-      box.appendChild(b);
-    });
-  }
-
-  function selectPeriod(id) {
-    state.period = id;
-    document.querySelectorAll('.period-btn').forEach(function (b) {
-      var on = b.dataset.id === id;
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-    var life = id === 'life';
-    $('categories').hidden = life;
-    if (life) return renderLife();
-    if (state.category) return selectCategory(state.category);
     $('reading').hidden = true;
     $('reading').innerHTML = '';
+  }
+
+  // 총운은 올해·내년으로 나누고, 인생 전반(대운)은 별도 버튼으로 둡니다.
+  function categoryList() {
+    return [
+      { id: 'overall-' + THIS_YEAR, label: THIS_YEAR + '년 총운', icon: '🌟', year: THIS_YEAR },
+      { id: 'overall-' + (THIS_YEAR + 1), label: (THIS_YEAR + 1) + '년 총운', icon: '✨', year: THIS_YEAR + 1 }
+    ].concat(R.CATEGORIES, [{ id: 'life', label: '인생 전반 (대운)', icon: '🧭' }]);
   }
 
   function renderPillars(r) {
@@ -1391,7 +1350,7 @@ select { padding: 14px 10px; }
   function renderCategories() {
     var box = $('categories');
     box.innerHTML = '';
-    [R.OVERALL].concat(R.CATEGORIES).forEach(function (cat) {
+    categoryList().forEach(function (cat) {
       var b = el('button', 'cat-btn');
       b.type = 'button';
       b.setAttribute('role', 'tab');
@@ -1399,27 +1358,29 @@ select { padding: 14px 10px; }
       b.dataset.id = cat.id;
       b.appendChild(el('span', 'cat-icon', cat.icon));
       b.appendChild(el('span', 'cat-label', cat.label));
-      b.addEventListener('click', function () { selectCategory(cat.id); });
+      b.addEventListener('click', function () { selectCategory(cat); });
       box.appendChild(b);
     });
   }
 
-  function selectCategory(id) {
-    state.category = id;
+  function selectCategory(cat) {
+    state.category = cat.id;
     document.querySelectorAll('.cat-btn').forEach(function (b) {
-      var on = b.dataset.id === id;
+      var on = b.dataset.id === cat.id;
       b.classList.toggle('active', on);
       b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
+    if (cat.id === 'life') return renderLife();
 
-    var year = periodYear();
-    var res = R.read(state.result, id, { gender: state.gender, year: year });
+    var res = cat.year
+      ? R.read(state.result, 'overall', { year: cat.year })
+      : R.read(state.result, cat.id, { gender: state.gender });
     var box = $('reading');
     box.innerHTML = '';
     box.hidden = false;
 
     var head = el('div', 'reading-head');
-    head.appendChild(el('h4', null, res.category.icon + ' ' + year + '년 ' + res.category.label));
+    head.appendChild(el('h4', null, cat.icon + ' ' + cat.label));
     var stars = el('div', 'stars');
     stars.setAttribute('aria-label', '5점 만점에 ' + res.stars + '점');
     stars.textContent = '★★★★★'.slice(0, res.stars) + '☆☆☆☆☆'.slice(0, 5 - res.stars);
